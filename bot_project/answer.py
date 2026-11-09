@@ -1,7 +1,7 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-def answer(user_text , tfidf ,original_sentences, x_sentences, threshold = 0.1):
+def answer(user_text , tfidf ,original_sentences, x_sentences, threshold = 0.28):
     user_vac = tfidf.transform([user_text])
     
     similiraty = cosine_similarity(user_vac,x_sentences)[0]

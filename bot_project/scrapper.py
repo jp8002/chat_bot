@@ -39,7 +39,7 @@ class Scrapper:
             print(f"Erro ao acessar {url}: {e}")
 
     def findLink(self, start_url, filename="base.txt", delay=5):
-        PAGINAS = 50
+        PAGINAS = 10
         """Mapeia a página inicial, salva seus parágrafos e segue os links."""
         print(f"Iniciando raspagem em: {start_url}")
 

@@ -118,6 +118,12 @@ class MainWindow(QMainWindow):
                 "I'm sorry if my previous response seemed vague or unsatisfactory! \n"
                 + resposta
             )
+        
+        elif compound_score >= 0.3:
+            resposta = (
+                "Thank you for your compliment, I'm here to help! \n"
+                + resposta
+            )
         self.sendMessage(resposta, False)        
         
 app = QApplication()
