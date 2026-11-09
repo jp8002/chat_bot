@@ -7,7 +7,8 @@ from preprocessing import preprocessing
 from answer import answer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from scrapper import Scrapper
-
+from pathlib import Path
+import utils
 
 
 class MainWindow(QMainWindow):
@@ -49,13 +50,14 @@ class MainWindow(QMainWindow):
         self.iniciar_bot()
         
     def iniciar_bot(self):
-        with open("base.txt","r") as f:
-            article = f.read()
-            
-        if article == "":
+        base_path = Path("base.txt")
+        
+        file_is_empty = not base_path.exists() or not base_path.read_text(encoding='utf-8')
+        
+        if file_is_empty:
             Scrapper().findLink(start_url="https://en.wikipedia.org/wiki/Star_Wars_(film)")
-            with open("base.txt","r") as f:
-                        article = f.read()
+
+        article = base_path.read_text(encoding='utf-8')
             
         self.original_sentences = [sentence for sentence in nltk.sent_tokenize(article)]
         for sentence in self.original_sentences:
@@ -64,7 +66,7 @@ class MainWindow(QMainWindow):
         self.tfidf = TfidfVectorizer(ngram_range=(1,2), sublinear_tf=True)
         self.x_sentences = self.tfidf.fit_transform(self.cleaned_sentences)
                 
-        text = 'Hello! I am a chatbot and I will answer your questions about Star wars'
+        text = utils.get_greeting()
         self.sendMessage(text,False)
     
     def sendMessage(self,text, user = True):
@@ -83,6 +85,7 @@ class MainWindow(QMainWindow):
 
 
         else:
+            print(text)
             text = "Bot: " + text
             label.setStyleSheet("background-color:red;color:white; border-radius: 10px; padding:10px;")
             # Mantém a mensagem na ESQUERDA e empurra o espaço vago para a direita
