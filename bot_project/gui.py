@@ -1,6 +1,5 @@
 from PySide6.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QVBoxLayout, QScrollArea, QHBoxLayout, QLineEdit, QPushButton, QSizePolicy
 from PySide6.QtCore import Qt
-import spacy
 from PySide6.QtWidgets import QMessageBox
 import nltk
 from preprocessing import preprocessing
@@ -16,7 +15,6 @@ class MainWindow(QMainWindow):
         super().__init__()
         
         self.cleaned_sentences =[]
-        self.nlp = spacy.load("en_core_web_lg")          
         
         self.setWindowTitle("Movies ChatBot")
         
@@ -61,7 +59,7 @@ class MainWindow(QMainWindow):
             
         self.original_sentences = [sentence for sentence in nltk.sent_tokenize(article)]
         for sentence in self.original_sentences:
-                self.cleaned_sentences.append(preprocessing(sentence,self.nlp))
+                self.cleaned_sentences.append(preprocessing(sentence))
         
         self.tfidf = TfidfVectorizer(ngram_range=(1,2), sublinear_tf=True)
         self.x_sentences = self.tfidf.fit_transform(self.cleaned_sentences)
@@ -104,10 +102,22 @@ class MainWindow(QMainWindow):
             return
         self.sendMessage(user_text)
         self.message_input.clear()
-        self.respostaBot(user_text)
+        
+        sentimento = utils.analisar_sentimentos(user_text)
+        compound_score = sentimento.get("compound", 0.0)
+        
+        
+        self.respostaBot(user_text, compound_score=compound_score)
+        
     
-    def respostaBot(self, user_text):
+    def respostaBot(self, user_text, compound_score):
         resposta = answer(original_sentences=self.original_sentences,x_sentences=self.x_sentences, user_text=user_text, tfidf=self.tfidf)
+        
+        if compound_score <= -0.5:
+           resposta = (
+                "I'm sorry if my previous response seemed vague or unsatisfactory! \n"
+                + resposta
+            )
         self.sendMessage(resposta, False)        
         
 app = QApplication()

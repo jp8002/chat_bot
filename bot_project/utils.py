@@ -1,4 +1,8 @@
 from random import choice
+import nltk
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from preprocessing import user_input_cleaning
+nltk.download('vader_lexicon', quiet=True)
 
 _GREETING_OPTIONS = (
     "Hello there!\nI am your protocol droid of knowledge. Ask me anything about Star Wars!",
@@ -11,3 +15,12 @@ _GREETING_OPTIONS = (
 
 def get_greeting() -> str:
     return choice(_GREETING_OPTIONS)
+
+
+def analisar_sentimentos(text):
+    nltk_classifier = SentimentIntensityAnalyzer()
+
+    cleaned_text = user_input_cleaning(text)
+    sentimento = nltk_classifier.polarity_scores(cleaned_text)
+
+    return sentimento
